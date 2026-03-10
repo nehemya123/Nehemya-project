@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      min-height: 100vh;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .display {
+      background: #020617;
+      border-radius: 16px;
+      padding: 18px;
+      min-height: 110px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .expression {
+      color: #94a3b8;
+      font-size: 1rem;
+      word-break: break-word;
+      min-height: 24px;
+    }
+
+    .result {
+      font-size: 2rem;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+      background: #1e293b;
+      color: #f8fafc;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    button.operator {
+      background: #334155;
+    }
+
+    button.equal {
+      background: #2563eb;
+    }
+
+    button.clear {
+      background: #dc2626;
+    }
+
+    button.action {
+      background: #0f766e;
+    }
+
+    .smart-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      border-radius: 14px;
+      padding: 14px;
+      background: #020617;
+      color: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      resize: vertical;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .row button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .output {
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 180px;
+      color: #e2e8f0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .examples {
+      margin-top: 14px;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .examples code {
+      background: rgba(148, 163, 184, 0.15);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #f8fafc;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="card">
+      <h1>AI Calculator</h1>
+      <p class="subtitle">
+        A smart JavaScript calculator that handles normal math, simple equations, and short explanations.
+      </p>
+
+      <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
+      </div>
+
+      <div class="grid">
+        <button class="clear" data-value="C">C</button>
+        <button class="operator" data-value="(">(</button>
+        <button class="operator" data-value=")">)</button>
+        <button class="operator" data-value="/">÷</button>
+
+        <button data-value="7">7</button>
+        <button data-value="8">8</button>
+        <button data-value="9">9</button>
+        <button class="operator" data-value="*">×</button>
+
+        <button data-value="4">4</button>
+        <button data-value="5">5</button>
+        <button data-value="6">6</button>
+        <button class="operator" data-value="-">−</button>
+
+        <button data-value="1">1</button>
+        <button data-value="2">2</button>
+        <button data-value="3">3</button>
+        <button class="operator" data-value="+">+</button>
+
+        <button data-value="0">0</button>
+        <button data-value=".">.</button>
+        <button class="action" data-value="DEL">DEL</button>
+        <button class="equal" data-value="=">=</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h1>Smart Math Assistant</h1>
+      <p class="subtitle">
+        Type something like a calculator problem, a simple equation, or ask for a quick explanation.
+      </p>
+
+      <div class="smart-box">
+        <textarea id="smartInput" placeholder="Examples:
+2 + 5 * 3
+solve 3x + 6 = 12
+explain 5 * (2 + 3)
+what is 18% of 250"></textarea>
+
+        <div class="row">
+          <button id="solveBtn" class="equal">Solve</button>
+          <button id="exampleBtn" class="action">Try Example</button>
+          <button id="clearSmartBtn" class="clear">Clear</button>
+        </div>
+
+        <div class="output" id="smartOutput">Your answer will appear here.</div>
+
+        <div class="examples">
+          Try inputs like:<br>
+          <code>solve 2x + 3 = 11</code><br>
+          <code>explain 7 + 8 / 2</code><br>
+          <code>what is 15% of 240</code><br>
+          <code>(12 - 4) * 3</code>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const expressionEl = document.getElementById('expression');
+    const resultEl = document.getElementById('result');
+    const buttons = document.querySelectorAll('[data-value]');
+    const smartInput = document.getElementById('smartInput');
+    const smartOutput = document.getElementById('smartOutput');
+    const solveBtn = document.getElementById('solveBtn');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const clearSmartBtn = document.getElementById('clearSmartBtn');
+
+    let expression = '';
+
+    function updateDisplay() {
+      expressionEl.textContent = expression || '';
+      resultEl.textContent = expression ? previewResult(expression) : '0';
+    }
+
+    function previewResult(expr) {
+      try {
+        const cleaned = sanitizeExpression(expr);
+        if (!cleaned) return '0';
+        const value = Function(`"use strict"; return (${cleaned})`)();
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return formatNumber(value);
+        }
+        return '0';
+      } catch {
+        return '...';
+      }
+    }
+
+    function sanitizeExpression(expr) {
+      return expr.replace(/÷/g, '/').replace(/×/g, '*').replace(/[^0-9+\-*/().% ]/g, '');
+    }
+
+    function formatNumber(num) {
+      if (Number.isInteger(num)) return String(num);
+      return parseFloat(num.toFixed(8)).toString();
+    }
+
+    function evaluateExpression(expr) {
+      const cleaned = sanitizeExpression(expr);
+      const value = Function(`"use strict"; return (${cleaned})`)();
+      if (!Number.isFinite(value)) {
+        throw new Error('Invalid result');
+      }
+      return formatNumber(value);
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.value;
+
+        if (value === 'C') {
+          expression = '';
+          updateDisplay();
+          return;
+        }
+
+        if (value === 'DEL') {
+          expression = expression.slice(0, -1);
+          updateDisplay();
+          return;
+        }
+
+        if (value === '=') {
+          try {
+            expression = evaluateExpression(expression);
+            updateDisplay();
+          } catch {
+            resultEl.textContent = 'Error';
+          }
+          return;
+        }
+
+        expression += value;
+        updateDisplay();
+      });
+    });
+
+    function solveLinearEquation(text) {
+      const match = text.replace(/\s+/g, '').match(/^([+-]?\d*\.?\d*)x([+-]\d*\.?\d+)?=([+-]?\d*\.?\d+)$/i);
+      if (!match) return null;
+
+      let a = match[1];
+      let b = match[2] || '0';
+      const c = parseFloat(match[3]);
+
+      if (a === '' || a === '+') a = 1;
+      else if (a === '-') a = -1;
+      else a = parseFloat(a);
+
+      b = parseFloat(b);
+      if (a === 0) return 'No unique solution.';
+
+      const x = (c - b) / a;
+      return {
+        answer: `x = ${formatNumber(x)}`,
+        explanation: `Move ${formatNumber(b)} to the other side, then divide by ${formatNumber(a)}.`
+      };
+    }
+
+    function solvePercentage(text) {
+      const match = text.toLowerCase().match(/(\d+(?:\.\d+)?)\s*%\s*of\s*(\d+(?:\.\d+)?)/);
+      if (!match) return null;
+      const percent = parseFloat(match[1]);
+      const total = parseFloat(match[2]);
+      const value = (percent / 100) * total;
+      return {
+        answer: `${percent}% of ${total} = ${formatNumber(value)}`,
+        explanation: `Convert ${percent}% to decimal (${percent / 100}) and multiply by ${total}.`
+      };
+    }
+
+    function explainExpression(text) {
+      const expr = text
+        .replace(/^explain\s*/i, '')
+        .replace(/^what is\s*/i, '')
+        .trim();
+
+      try {
+        const value = evaluateExpression(expr);
+        return {
+          answer: `${expr} = ${value}`,
+          explanation: `The calculator follows order of operations: parentheses first, then multiplication/division, then addition/subtraction.`
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function smartSolve(text) {
+      const input = text.trim();
+      if (!input) {
+        return 'Please type a math problem first.';
+      }
+
+      const percentage = solvePercentage(input);
+      if (percentage) {
+        return `Answer: ${percentage.answer}\n\nExplanation: ${percentage.explanation}`;
+      }
+
+      const equationText = input.toLowerCase().replace(/^solve\s*/i, '');
+      const linear = solveLinearEquation(equationText);
+      if (linear) {
+        return `Answer: ${linear.answer}\n\nExplanation: ${linear.explanation}`;
+      }
+
+      if (/^explain\s+/i.test(input) || /^what is\s+/i.test(input)) {
+        const explained = explainExpression(input);
+        if (explained) {
+          return `Answer: ${explained.answer}\n\nExplanation: ${explained.explanation}`;
+        }
+      }
+
+      try {
+        const value = evaluateExpression(input);
+        return `Answer: ${input} = ${value}\n\nExplanation: This was solved as a normal math expression.`;
+      } catch {
+        return 'I can solve normal math, simple equations like 3x + 6 = 12, and percentage questions like 18% of 250.';
+      }
+    }
+
+    solveBtn.addEventListener('click', () => {
+      smartOutput.textContent = smartSolve(smartInput.value);
+    });
+
+    exampleBtn.addEventListener('click', () => {
+      smartInput.value = 'solve 3x + 6 = 12';
+      smartOutput.textContent = smartSolve(smartInput.value);
+    });
+
+    clearSmartBtn.addEventListener('click', () => {
+      smartInput.value = '';
+      smartOutput.textContent = 'Your answer will appear here.';
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const allowed = '0123456789+-*/().';
+      if (allowed.includes(event.key)) {
+        expression += event.key;
+        updateDisplay();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        try {
+          expression = evaluateExpression(expression);
+          updateDisplay();
+        } catch {
+          resultEl.textContent = 'Error';
+        }
+      } else if (event.key === 'Backspace') {
+        expression = expression.slice(0, -1);
+        updateDisplay();
+      }
+    });
+
+    updateDisplay();
+  </script>
+</body>
+</html>
